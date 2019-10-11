@@ -62,6 +62,7 @@ import com.vijay.jsonwizard.widgets.SpinnerFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
@@ -362,6 +363,10 @@ public class JsonFormFragmentPresenter extends
                         openMrsEntityId, popup);
             } else if (childAt instanceof ImageView) {
                 Object path = childAt.getTag(R.id.imagePath);
+
+                if (TextUtils.isEmpty((String)path))
+                    path = childAt.getTag(R.id.simprints_guid);
+
                 if (path instanceof String) {
                     getView().writeValue(mStepName, key, (String) path, openMrsEntityParent, openMrsEntity,
                             openMrsEntityId,
