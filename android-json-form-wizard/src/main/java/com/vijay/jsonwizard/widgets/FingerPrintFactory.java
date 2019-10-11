@@ -1,6 +1,7 @@
 package com.vijay.jsonwizard.widgets;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Build;
 import android.text.TextUtils;
@@ -10,7 +11,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import com.google.android.gms.vision.barcode.Barcode;
+import com.rengwuxian.materialedittext.MaterialEditText;
 import com.rey.material.util.ViewUtil;
 import com.vijay.jsonwizard.R;
 import com.vijay.jsonwizard.constants.JsonFormConstants;
@@ -18,6 +22,7 @@ import com.vijay.jsonwizard.fragments.JsonFormFragment;
 import com.vijay.jsonwizard.interfaces.CommonListener;
 import com.vijay.jsonwizard.interfaces.FormWidgetFactory;
 import com.vijay.jsonwizard.interfaces.JsonApi;
+import com.vijay.jsonwizard.interfaces.OnActivityResultListener;
 import com.vijay.jsonwizard.utils.FormUtils;
 import com.vijay.jsonwizard.utils.ImageUtils;
 import com.vijay.jsonwizard.utils.ValidationStatus;
@@ -26,9 +31,15 @@ import com.vijay.jsonwizard.views.JsonFormFragmentView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.smartregister.simprint.SimPrintsConstantHelper;
+import org.smartregister.simprint.SimPrintsRegistration;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import timber.log.Timber;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * Created by vijay on 24-05-2015.
@@ -59,12 +70,35 @@ public class FingerPrintFactory implements FormWidgetFactory {
 
     @Override
     public List<View> getViewsFromJson(String stepName, Context context, JsonFormFragment formFragment, JSONObject jsonObject, CommonListener listener, boolean popup) throws Exception {
-        return attachJson(stepName, context, jsonObject, listener, popup);
+                return attachJson(stepName, context, jsonObject, listener, popup);
     }
 
     @Override
     public List<View> getViewsFromJson(String stepName, Context context, JsonFormFragment formFragment, JSONObject jsonObject, CommonListener listener) throws Exception {
         return attachJson(stepName, context, jsonObject, listener, false);
+    }
+
+    protected void addFingerprintResultsListener(final Context context, final ImageView imageView) {
+        if (context instanceof JsonApi) {
+            JsonApi jsonApi = (JsonApi) context;
+            jsonApi.addOnActivityResultListener(JsonFormConstants.ACTIVITY_REQUEST_CODE.REQUEST_CODE_REGISTER,
+                    new OnActivityResultListener() {
+                        @Override
+                        public void onActivityResult(int requestCode,
+                                                     int resultCode, Intent data) {
+                            if (requestCode == JsonFormConstants.ACTIVITY_REQUEST_CODE.REQUEST_CODE_REGISTER && resultCode == RESULT_OK) {
+                                if (data != null) {
+
+                                    SimPrintsRegistration registration = (SimPrintsRegistration)data.getSerializableExtra(SimPrintsConstantHelper.INTENT_DATA);
+                                    imageView.setTag(R.id.simprints_guid, registration.getGuid());
+
+                                    Timber.d("Scanned Fingerprint GUID %s ", registration.getGuid());
+                                } else
+                                    Timber.i("NO RESULT FOR FINGERPRINT");
+                            }
+                        }
+                    });
+        }
     }
 
     private List<View> attachJson(String stepName, Context context, JSONObject jsonObject, CommonListener listener, boolean popup) throws JSONException {
@@ -172,6 +206,7 @@ public class FingerPrintFactory implements FormWidgetFactory {
 
         ((JsonApi) context).addFormDataView(imageView);
         imageView.setOnClickListener(listener);
+        addFingerprintResultsListener(context, imageView);
         views.add(imageView);
     }
 
