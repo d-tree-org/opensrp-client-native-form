@@ -11,10 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
-import com.google.android.gms.vision.barcode.Barcode;
-import com.rengwuxian.materialedittext.MaterialEditText;
 import com.rey.material.util.ViewUtil;
 import com.vijay.jsonwizard.R;
 import com.vijay.jsonwizard.constants.JsonFormConstants;
@@ -93,8 +90,10 @@ public class FingerPrintFactory implements FormWidgetFactory {
                                     imageView.setTag(R.id.simprints_guid, registration.getGuid());
                                     imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.finger_print_done));
                                     Timber.d("Scanned Fingerprint GUID %s ", registration.getGuid());
-                                } else
+                                } else {
                                     Timber.i("NO RESULT FOR FINGERPRINT");
+                                    imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.finger_print_failed));
+                                }
                             }
                         }
                     });
