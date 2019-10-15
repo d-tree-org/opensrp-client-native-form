@@ -3,7 +3,7 @@
     <item
         android:width="250dp">
         <shape android:shape="rectangle">
-            <solid android:color="@color/red_overlay">
+            <solid android:color="#ff0000">
 
             </solid>
         </shape>
