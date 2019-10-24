@@ -88,11 +88,11 @@ public class FingerPrintFactory implements FormWidgetFactory {
 
                                     SimPrintsRegistration registration = (SimPrintsRegistration)data.getSerializableExtra(SimPrintsConstantHelper.INTENT_DATA);
                                     imageView.setTag(R.id.simprints_guid, registration.getGuid());
-                                    setFingerprintDrawable(context, imageView, registration.getGuid());
+                                    setFingerprintDrawable(context, imageView, registration.getGuid(), true);
                                     Timber.d("Scanned Fingerprint GUID %s ", registration.getGuid());
                                 } else {
                                     Timber.i("NO RESULT FOR FINGERPRINT");
-                                    setFingerprintDrawable(context, imageView, "");
+                                    setFingerprintDrawable(context, imageView, "", true);
                                 }
                             }
                         }
@@ -100,12 +100,20 @@ public class FingerPrintFactory implements FormWidgetFactory {
         }
     }
 
-    private void setFingerprintDrawable(final Context context, final ImageView imageView, String fingerprintValue){
-        if (!TextUtils.isEmpty(fingerprintValue)){
+    private void setFingerprintDrawable(final Context context, final ImageView imageView,
+                                        String fingerprintValue, boolean isFromScan){
+
+
+        if (isFromScan && TextUtils.isEmpty(fingerprintValue)){
+            //From scanning fingerprint and no result has not been received
+            imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.finger_print_failed));
+        }else if (isFromScan && !TextUtils.isEmpty(fingerprintValue)
+                || (!isFromScan && !TextUtils.isEmpty(fingerprintValue))){
             imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.finger_print_done));
         }else {
-            imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.finger_print_failed));
+            imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.finger_print));
         }
+
     }
 
     private List<View> attachJson(String stepName, Context context, JSONObject jsonObject, CommonListener listener, boolean popup) throws JSONException {
@@ -208,9 +216,9 @@ public class FingerPrintFactory implements FormWidgetFactory {
         if (!TextUtils.isEmpty(imagePath)) {
             imageView.setTag(R.id.imagePath, imagePath);
             imageView.setImageBitmap(ImageUtils.loadBitmapFromFile(context, imagePath, ImageUtils.getDeviceWidth(context), FormUtils.dpToPixels(context, 200)));
-            setFingerprintDrawable(context, imageView, imagePath);
+            setFingerprintDrawable(context, imageView, imagePath, false);
         }else {
-            setFingerprintDrawable(context, imageView, imagePath);
+            setFingerprintDrawable(context, imageView, imagePath, false);
         }
 
 
