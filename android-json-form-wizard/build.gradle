@@ -30,6 +30,7 @@ android {
         targetSdkVersion androidTargetSdkVersion
         versionCode Integer.parseInt(project.VERSION_CODE)
         versionName project.VERSION_NAME
+        project.archivesBaseName = "opensrp-client-native-form"
     }
     buildTypes {
         release {
@@ -65,7 +66,7 @@ def getVersionName = { ->
 }
 
 def getArtificatId = { ->
-    return "android-json-form-wizard" // Library name
+    return "opensrp-client-native-form" // Library name
 }
 
 publishing {
