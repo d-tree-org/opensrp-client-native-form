@@ -34,6 +34,8 @@ public class DatePickerDialog extends DialogFragment {
     private long maxDate;
     private boolean calendarViewShown;
     private Context context;
+    private char[] ymdOrder = new char[]{'d', 'm', 'y'};
+    private boolean isNumericDatePicker = false;
 
     public DatePickerDialog() {
         this.minDate = -1;
@@ -78,7 +80,9 @@ public class DatePickerDialog extends DialogFragment {
             }
         });
 
-        datePicker = dialogView.findViewById(R.id.date_picker);
+        datePicker = dialogView.findViewById(isNumericDatePicker ? R.id.date_picker_numeric : R.id.date_picker);
+        datePicker.setVisibility(View.VISIBLE);
+
         if (minDate != -1) {
             datePicker.setMinDate(minDate);
         }
@@ -87,11 +91,29 @@ public class DatePickerDialog extends DialogFragment {
         }
         datePicker.setCalendarViewShown(calendarViewShown);
         if (date != null) {
+
             Calendar calendar = Calendar.getInstance();
-            calendar.setTime(date);
+
+            Date minDate = new Date(datePicker.getMinDate());
+            Date maxDate = new Date(datePicker.getMaxDate());
+
+            if (datePicker.getMinDate() != 0) {
+                calendar.setTime(date.before(minDate) ? minDate : date);
+            }
+
+            if (datePicker.getMaxDate() != 0) {
+                calendar.setTime(date.after(maxDate) ? maxDate : date);
+
+            }
+
+            if (datePicker.getMaxDate() == 0 && datePicker.getMaxDate() == 0) {
+
+                calendar.setTime(date);
+            }
+
             setDate(calendar);
         }
-        DatePickerUtils.themeDatePicker(datePicker, new char[]{'d', 'm', 'y'});
+        DatePickerUtils.themeDatePicker(datePicker, ymdOrder);
 
         cancelButton = dialogView.findViewById(R.id.cancel_button);
         cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -128,6 +150,10 @@ public class DatePickerDialog extends DialogFragment {
         this.calendarViewShown = calendarViewShown;
     }
 
+    public void setYmdOrder(char[] ymdOrder) {
+        this.ymdOrder = ymdOrder;
+    }
+
     public void setDate(Date date) {
         this.date = date;
         Calendar calendar = Calendar.getInstance();
@@ -148,5 +174,9 @@ public class DatePickerDialog extends DialogFragment {
 
     public DatePicker getDatePicker() {
         return this.datePicker;
+    }
+
+    public void setNumericDatePicker(boolean numericDatePicker) {
+        isNumericDatePicker = numericDatePicker;
     }
 }

@@ -66,6 +66,7 @@ public class JsonFormConstants {
     public static final String V_REQUIRED = "v_required";
     public static final String V_MIN_LENGTH = "v_min_length";
     public static final String V_MAX_LENGTH = "v_max_length";
+    public static final String IS_FIXED_SIZE = "is_fixed_size";
     public static final String V_REGEX = "v_regex";
     public static final String V_EMAIL = "v_email";
     public static final String V_URL = "v_url";
@@ -205,6 +206,39 @@ public class JsonFormConstants {
     public static final String DATE_TODAY_HIDDEN = "date_today_hidden";
     public static final String FALSE = "false";
     public static final String DISPLAY_SCROLL_BARS = "display_scroll_bars";
+    public static final String SKIP_BLANK_STEPS = "skip_blank_steps";
+    public static final String MULTI_SELECT_LIST ="multi_select_list" ;
+    public static final String FORM_VERSION = "form_version";
+    public static final String LABEL_CONSTRAINT_LAYOUT = "label_constraint_layout";
+    public static final String STEP = "step";
+    public static final String RULE = "rule/";
+    public static final String REFERENCE_EDIT_TEXT = "reference_edit_text";
+    public static final String DISPLAY_LABEL = "display_label";
+
+    public interface MultiSelectUtils {
+        String IS_HEADER = "isHeader";
+        String TEXT = "text";
+        String PROPERTY = "property";
+        String MAX_SELECTABLE = "maxSelectable";
+        String META = "meta";
+        String INFO = "info";
+        String BUTTON_TEXT = "buttonText";
+        String DIALOG_TITLE = "dialogTitle";
+        String SEARCH_HINT = "searchHint";
+        String SOURCE = "source";
+        String GROUPINGS = "groupings";
+        String SORT = "sort";
+        String SORTING_CLASS = "sortClass";
+        String ALPHABET_SORTING = "com.vijay.jsonwizard.comparator.MultiSelectListAlphabetComparator";
+        String FILES_LOCATION = "native.form/multiselectlist";
+        String REPOSITORY_CLASS = "repositoryClass";
+    }
+
+    public static class Properties {
+        public static final String APP_VERSION_NAME = "appVersionName";
+        public static final String APP_FORM_VERSION = "formVersion";
+        public static final String DETAILS = "details";
+    }
 
     public static class JsonFormConstantsUtils {
         public static final String CONTACT_CONTAINER = "container";
@@ -229,6 +263,7 @@ public class JsonFormConstants {
         public static final String DONE = "Done";
 
     }
+
     public static class JSON_FORM_KEY {
         public static final String EX_RULES = "ex-rules";
         public static final String EX_CHECKBOX = "ex-checkbox";
@@ -240,6 +275,7 @@ public class JsonFormConstants {
         public static final String JSON = "json";
         public static final String FORM = "form";
         public static final String STEPNAME = "stepName";
+        public static final String ID = "id";
     }
 
     public static class BARCODE_CONSTANTS {
@@ -272,8 +308,13 @@ public class JsonFormConstants {
     public static class MESSAGE_TYPE {
         public static final String GLOBAL_VALUES = "global_values";
     }
+
     public static class ACTIVITY_REQUEST_CODE {
         public static final int REQUEST_CODE_REGISTER = 1222;
         public static final int REQUEST_CODE_VERIFY = 1333;
+    }
+
+    public interface RepeatingGroupFactory {
+        String SHOW_GROUP_LABEL = "showGroupLabel";
     }
 }
