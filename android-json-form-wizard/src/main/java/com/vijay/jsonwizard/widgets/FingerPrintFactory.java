@@ -89,6 +89,7 @@ public class FingerPrintFactory implements FormWidgetFactory {
 
                                     SimPrintsRegistration registration = (SimPrintsRegistration) data.getSerializableExtra(SimPrintsConstantHelper.INTENT_DATA);
                                     imageView.setTag(R.id.simprints_guid, registration.getGuid());
+                                    imageView.setTag(R.id.imagePath, registration.getGuid());
                                     setFingerprintDrawable(context, imageView, registration.getGuid(), true);
                                     Timber.d("Scanned Fingerprint GUID %s ", registration.getGuid());
                                 } else {

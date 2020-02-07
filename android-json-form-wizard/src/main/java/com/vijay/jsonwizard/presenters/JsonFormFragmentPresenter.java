@@ -12,11 +12,11 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.FileProvider;
-import android.support.v7.widget.AppCompatButton;
-import android.support.v7.widget.AppCompatRadioButton;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.core.content.FileProvider;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatRadioButton;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
@@ -65,7 +65,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
@@ -224,8 +223,12 @@ public class JsonFormFragmentPresenter extends
             } else if (childAt instanceof ImageView) {
                 Object path = childAt.getTag(R.id.imagePath);
 
-                if (TextUtils.isEmpty((String)path))
+                if (key.equals("finger_print")){
                     path = childAt.getTag(R.id.simprints_guid);
+                    if (TextUtils.isEmpty((String)path)){
+                        path = childAt.getTag(R.id.imagePath);
+                    }
+                }
 
                 if (path instanceof String) {
                     getView().writeValue(mStepName, key, (String) path, openMrsEntityParent, openMrsEntity,

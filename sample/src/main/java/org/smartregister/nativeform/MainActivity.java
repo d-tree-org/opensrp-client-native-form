@@ -2,13 +2,12 @@ package org.smartregister.nativeform;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 
 import com.vijay.jsonwizard.activities.JsonFormActivity;
 import com.vijay.jsonwizard.activities.JsonWizardFormActivity;
@@ -18,7 +17,6 @@ import com.vijay.jsonwizard.domain.Form;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -95,8 +93,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String jsonString = data.getStringExtra("json");
             Log.i(getClass().getName(), "Result json String !!!! " + jsonString);
 
-            TextView formResults = findViewById(R.id.form_results);
-            formResults.setText(jsonString);
+//            TextView formResults = findViewById(R.id.form_results);
+//            formResults.setText(jsonString);
 
         }
         super.onActivityResult(requestCode, resultCode, data);
