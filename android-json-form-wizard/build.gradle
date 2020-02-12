@@ -139,8 +139,8 @@ publishing {
 }
 
 repositories {
-    maven { url "https://clojars.org/repo/" }
     google()
+    maven { url "https://clojars.org/repo/" }
 }
 
 dependencies {
@@ -171,7 +171,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.android.support', module: 'recyclerview-v7'
     }
-    implementation('com.google.android.gms:play-services-vision:17.0.2') {
+    implementation('com.google.android.gms:play-services-vision:18.0.0') {
         exclude group: 'com.android.support', module: 'appcompat-v7'
         exclude group: 'com.android.support', module: 'support-v4'
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -187,6 +187,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'appcompat-v7'
         exclude group: 'com.android.support.test', module: 'runner'
         exclude group: 'com.android.support.test.espresso', module: 'espresso-core'
+        exclude group: 'com.google.android.gms', module: 'play-services-vision'
     }
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
 
