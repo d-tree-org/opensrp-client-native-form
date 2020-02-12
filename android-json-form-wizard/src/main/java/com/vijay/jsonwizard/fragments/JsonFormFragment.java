@@ -644,4 +644,6 @@ public class JsonFormFragment extends MvpFragment<JsonFormFragmentPresenter, Jso
     public static NativeFormsProperties getNativeFormProperties() {
         return nativeFormProperties;
     }
+
+    public void customClick(Context context, String behaviour){}
 }
