@@ -137,9 +137,7 @@ public class ButtonFactory implements FormWidgetFactory {
                                     formFragment.next();
                                     break;
                                 default:
-                                    jsonObject.getJSONObject(JsonFormConstants.ACTION)
-                                            .put(JsonFormConstants.RESULT, false);
-                                    jsonObject.put(JsonFormConstants.VALUE, Boolean.FALSE.toString());
+                                    formFragment.customClick(context, behaviour);
                                     break;
                             }
                         }
