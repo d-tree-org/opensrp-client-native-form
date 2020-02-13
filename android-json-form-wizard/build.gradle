@@ -5,8 +5,8 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.3'
-        classpath 'org.apache.commons:commons-lang3:3.9'
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.2'
+        classpath 'org.apache.commons:commons-lang3:3.7'
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.3'
     }
 }
 
@@ -54,10 +54,6 @@ android {
         unitTests {
             includeAndroidResources = true
         }
-    }
-    compileOptions {
-        sourceCompatibility 1.8
-        targetCompatibility 1.8
     }
 }
 
@@ -139,8 +135,8 @@ publishing {
 }
 
 repositories {
+    mavenCentral()
     google()
-    maven { url "https://clojars.org/repo/" }
 }
 
 dependencies {
@@ -171,7 +167,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.android.support', module: 'recyclerview-v7'
     }
-    implementation('com.google.android.gms:play-services-vision:18.0.0') {
+    implementation('com.google.android.gms:play-services-vision:17.0.2') {
         exclude group: 'com.android.support', module: 'appcompat-v7'
         exclude group: 'com.android.support', module: 'support-v4'
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -189,7 +185,7 @@ dependencies {
         exclude group: 'com.android.support.test.espresso', module: 'espresso-core'
         exclude group: 'com.google.android.gms', module: 'play-services-vision'
     }
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
 
     implementation('io.ona.CircleProgressbar:lib:0.1.0@aar') {
         exclude group: 'com.android.support.constraint', module: 'constraint-layout'
