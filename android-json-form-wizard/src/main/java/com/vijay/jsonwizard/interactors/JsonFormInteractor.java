@@ -1,5 +1,6 @@
 package com.vijay.jsonwizard.interactors;
 
+import androidx.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 
@@ -14,7 +15,7 @@ import com.vijay.jsonwizard.widgets.ComponentSpacerFactory;
 import com.vijay.jsonwizard.widgets.CountDownTimerFactory;
 import com.vijay.jsonwizard.widgets.DatePickerFactory;
 import com.vijay.jsonwizard.widgets.EditTextFactory;
-import com.vijay.jsonwizard.widgets.ExpansionWidgetFactory;
+import com.vijay.jsonwizard.widgets.ExpansionPanelFactory;
 import com.vijay.jsonwizard.widgets.ExtendedRadioButtonWidgetFactory;
 import com.vijay.jsonwizard.widgets.FingerPrintFactory;
 import com.vijay.jsonwizard.widgets.GpsFactory;
@@ -23,6 +24,7 @@ import com.vijay.jsonwizard.widgets.HorizontalLineFactory;
 import com.vijay.jsonwizard.widgets.ImagePickerFactory;
 import com.vijay.jsonwizard.widgets.ImageViewFactory;
 import com.vijay.jsonwizard.widgets.LabelFactory;
+import com.vijay.jsonwizard.widgets.MultiSelectListFactory;
 import com.vijay.jsonwizard.widgets.NativeEditTextFactory;
 import com.vijay.jsonwizard.widgets.NativeRadioButtonFactory;
 import com.vijay.jsonwizard.widgets.NumberSelectorFactory;
@@ -50,15 +52,33 @@ import java.util.Map;
 public class JsonFormInteractor {
 
     private static final String TAG = "JsonFormInteractor";
-    private static final JsonFormInteractor INSTANCE = new JsonFormInteractor();
+    protected static JsonFormInteractor INSTANCE;
     public Map<String, FormWidgetFactory> map;
 
     public JsonFormInteractor() {
+        this(null);
+    }
+
+    public JsonFormInteractor(@Nullable Map<String, FormWidgetFactory> additionalWidgetsMap) {
         registerWidgets();
+        if (additionalWidgetsMap != null) {
+            for (Map.Entry<String, FormWidgetFactory> widgetFactoryEntry : additionalWidgetsMap.entrySet()) {
+                map.put(widgetFactoryEntry.getKey(), widgetFactoryEntry.getValue());
+            }
+        }
+    }
+
+
+    public static JsonFormInteractor getInstance(@Nullable Map<String, FormWidgetFactory> additionalWidgetsMap) {
+        if (INSTANCE == null) {
+            INSTANCE = new JsonFormInteractor(additionalWidgetsMap);
+        }
+
+        return INSTANCE;
     }
 
     public static JsonFormInteractor getInstance() {
-        return INSTANCE;
+        return getInstance(null);
     }
 
     protected void registerWidgets() {
@@ -89,7 +109,9 @@ public class JsonFormInteractor {
         map.put(JsonFormConstants.COUNTDOWN_TIMER, new CountDownTimerFactory());
         map.put(JsonFormConstants.IMAGE_VIEW, new ImageViewFactory());
         map.put(JsonFormConstants.EXTENDED_RADIO_BUTTON, new ExtendedRadioButtonWidgetFactory());
-        map.put(JsonFormConstants.EXPANSION_PANEL, new ExpansionWidgetFactory());
+        map.put(JsonFormConstants.EXPANSION_PANEL, new ExpansionPanelFactory());
+        map.put(JsonFormConstants.MULTI_SELECT_LIST, new MultiSelectListFactory());
+
     }
 
     public List<View> fetchFormElements(String stepName, JsonFormFragment formFragment,

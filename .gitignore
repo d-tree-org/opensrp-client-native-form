@@ -16,3 +16,5 @@ project.properties
 .settings
 build/
 .gradle
+/github.properties
+/app.properties
