@@ -222,6 +222,14 @@ public class JsonFormFragmentPresenter extends
                         openMrsEntityId, popup);
             } else if (childAt instanceof ImageView) {
                 Object path = childAt.getTag(R.id.imagePath);
+
+                if (key.equals("finger_print")){
+                    path = childAt.getTag(R.id.simprints_guid);
+                    if (TextUtils.isEmpty((String)path)){
+                        path = (String)childAt.getTag(R.id.imagePath);
+                    }
+                }
+
                 if (path instanceof String) {
                     getView().writeValue(mStepName, key, (String) path, openMrsEntityParent, openMrsEntity,
                             openMrsEntityId,
