@@ -2,8 +2,8 @@ package org.smartregister.nativeform;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -92,6 +92,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (resultCode == RESULT_OK) {
             String jsonString = data.getStringExtra("json");
             Log.i(getClass().getName(), "Result json String !!!! " + jsonString);
+
+//            TextView formResults = findViewById(R.id.form_results);
+//            formResults.setText(jsonString);
+
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
