@@ -17,4 +17,3 @@ project.properties
 build/
 .gradle
 /github.properties
-/app.properties
