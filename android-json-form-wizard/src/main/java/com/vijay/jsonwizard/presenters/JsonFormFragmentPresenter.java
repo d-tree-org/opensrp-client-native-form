@@ -226,7 +226,7 @@ public class JsonFormFragmentPresenter extends
                 if (key.equals("finger_print")){
                     path = childAt.getTag(R.id.simprints_guid);
                     if (TextUtils.isEmpty((String)path)){
-                        path = childAt.getTag(R.id.imagePath);
+                        path = (String)childAt.getTag(R.id.imagePath);
                     }
                 }
 
