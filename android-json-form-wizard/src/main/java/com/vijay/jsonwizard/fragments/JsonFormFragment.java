@@ -546,10 +546,10 @@ public class JsonFormFragment extends MvpFragment<JsonFormFragmentPresenter, Jso
     }
 
     @Override
-    public void startSimprintsRegistration(String projectId, String userId, String moduleId) {
+    public void startSimprintsRegistration(String projectId, String userId, String moduleId, JSONObject metadata) {
         if (!TextUtils.isEmpty(projectId) && !TextUtils.isEmpty(userId) && !TextUtils.isEmpty(moduleId)) {
             SimPrintsLibrary.init(getActivity(), projectId, userId);
-            SimPrintsRegisterActivity.startSimprintsRegisterActivity(getActivity(), moduleId, JsonFormConstants.ACTIVITY_REQUEST_CODE.REQUEST_CODE_REGISTER);
+            SimPrintsRegisterActivity.startSimprintsRegisterActivity(getActivity(), moduleId, JsonFormConstants.ACTIVITY_REQUEST_CODE.REQUEST_CODE_REGISTER, metadata);
 
         } else {
             // SimprintsLibrary.init(getActivity(),"tZqJnw0ajK04LMYdZzyw","test_user");
