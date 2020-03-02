@@ -11,6 +11,7 @@ public class JsonFormConstants {
     public static final String SIMPRINTS_MODULE_ID = "module_id";
     public static final String SIMPRINTS_GU_ID = "gu_id";
     public static final String SIMPRINTS_OPTION = "finger_print_option";
+    public static final String FINGERPRINT_EXTRA_INFO = "extra_info";
     public static final String EDIT_TEXT_STYLE = "edit_text_style";
     public static final String BORDERED_EDIT_TEXT = "bordered";
     public static final String FIRST_STEP_NAME = "step1";

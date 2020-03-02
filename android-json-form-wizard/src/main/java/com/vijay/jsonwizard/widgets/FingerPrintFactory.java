@@ -183,6 +183,7 @@ public class FingerPrintFactory implements FormWidgetFactory {
         view.setTag(R.id.module_id, jsonObject.optString(JsonFormConstants.SIMPRINTS_MODULE_ID));
         view.setTag(R.id.guid, jsonObject.optString(JsonFormConstants.SIMPRINTS_MODULE_ID));
         view.setTag(R.id.finger_print_option, jsonObject.optString(JsonFormConstants.SIMPRINTS_OPTION));
+        view.setTag(R.id.extra_info, jsonObject.optString(JsonFormConstants.FINGERPRINT_EXTRA_INFO));
         view.setTag(com.vijay.jsonwizard.R.id.address, stepName + ":" + jsonObject.getString(JsonFormConstants.KEY));
     }
 
