@@ -5,6 +5,7 @@
     <item name="module_id" type="id" />
     <item name="guid" type="id" />
     <item name="finger_print_option" type="id" />
+    <item name="extra_info" type="id" />
     <item name="label" type="id" />
     <item name="key" type="id" />
     <item name="address" type="id" />
