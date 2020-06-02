@@ -102,13 +102,7 @@ public class JsonFormFragmentPresenter extends
     private Map<String, ValidationStatus> invalidFields;
     private Stack<String> incorrectlyFormattedFields;
     private JsonFormErrorFragment errorFragment;
-
-    public JsonFormFragmentPresenter(JsonFormFragment formFragment) {
-        this.formFragment = formFragment;
-        mJsonFormInteractor = JsonFormInteractor.getInstance();
-        invalidFields = this.formFragment.getJsonApi().getInvalidFields();
-        incorrectlyFormattedFields = new Stack<>();
-    }
+    private FormUtils formUtils = new FormUtils();
 
     public JsonFormFragmentPresenter(JsonFormFragment formFragment,
                                      JsonFormInteractor jsonFormInteractor) {
@@ -116,102 +110,11 @@ public class JsonFormFragmentPresenter extends
         mJsonFormInteractor = jsonFormInteractor;
     }
 
-    public static ValidationStatus validate(JsonFormFragmentView formFragmentView, View childAt,
-                                            boolean requestFocus) {
-        if (childAt instanceof RadioGroup) {
-            RadioGroup radioGroup = (RadioGroup) childAt;
-            ValidationStatus validationStatus = NativeRadioButtonFactory
-                    .validate(formFragmentView, radioGroup);
-            if (!validationStatus.isValid()) {
-                if (requestFocus) {
-                    validationStatus.requestAttention();
-                }
-                return validationStatus;
-            }
-        } else if (childAt instanceof NativeEditText) {
-            NativeEditText editText = (NativeEditText) childAt;
-            ValidationStatus validationStatus = NativeEditTextFactory
-                    .validate(formFragmentView, editText);
-            if (!validationStatus.isValid()) {
-                if (requestFocus) {
-                    validationStatus.requestAttention();
-                }
-                return validationStatus;
-            }
-        } else if (childAt instanceof MaterialEditText) {
-            MaterialEditText editText = (MaterialEditText) childAt;
-            ValidationStatus validationStatus = EditTextFactory.validate(formFragmentView, editText);
-            if (!validationStatus.isValid()) {
-                if (requestFocus) {
-                    validationStatus.requestAttention();
-                }
-                return validationStatus;
-            }
-        } else if (childAt instanceof ImageView) {
-            ValidationStatus validationStatus = ImagePickerFactory
-                    .validate(formFragmentView, (ImageView) childAt);
-            if (!validationStatus.isValid()) {
-                if (requestFocus) {
-                    validationStatus.requestAttention();
-                }
-                return validationStatus;
-            }
-        } else if (childAt instanceof Button) {
-            String type = (String) childAt.getTag(R.id.type);
-            if (!TextUtils.isEmpty(type) && type.equals(JsonFormConstants.GPS)) {
-                ValidationStatus validationStatus = GpsFactory.validate(formFragmentView, (Button) childAt);
-                if (!validationStatus.isValid()) {
-                    if (requestFocus) {
-                        validationStatus.requestAttention();
-                    }
-                    return validationStatus;
-                }
-            }
-        } else if (childAt instanceof MaterialSpinner) {
-            MaterialSpinner spinner = (MaterialSpinner) childAt;
-            ValidationStatus validationStatus = SpinnerFactory.validate(formFragmentView, spinner);
-            if (!validationStatus.isValid()) {
-                if (requestFocus) {
-                    validationStatus.requestAttention();
-                }
-                setSpinnerError(spinner, validationStatus.getErrorMessage());
-                return validationStatus;
-            }
-        } else if (childAt instanceof ViewGroup
-                && childAt.getTag(R.id.is_checkbox_linear_layout) != null &&
-                Boolean.TRUE.equals(childAt.getTag(R.id.is_checkbox_linear_layout))) {
-            LinearLayout checkboxLinearLayout = (LinearLayout) childAt;
-            ValidationStatus validationStatus = CheckBoxFactory
-                    .validate(formFragmentView, checkboxLinearLayout);
-            if (!validationStatus.isValid()) {
-                if (requestFocus) {
-                    validationStatus.requestAttention();
-                }
-                return validationStatus;
-            }
-
-        } else if (childAt instanceof ViewGroup
-                && childAt.getTag(R.id.is_number_selector_linear_layout) != null &&
-                Boolean.TRUE.equals(childAt.getTag(R.id.is_number_selector_linear_layout))) {
-            ValidationStatus validationStatus = NumberSelectorFactory
-                    .validate(formFragmentView, (ViewGroup) childAt);
-            if (!validationStatus.isValid()) {
-                if (requestFocus) {
-                    validationStatus.requestAttention();
-                }
-                return validationStatus;
-            }
-        }
-
-        return new ValidationStatus(true, null, null, null);
-    }
-
-    private static void setSpinnerError(MaterialSpinner spinner, String spinnerError) {
-        try {
-            spinner.setError(spinnerError);
-        } catch (IllegalArgumentException e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
+    public JsonFormFragmentPresenter(JsonFormFragment formFragment) {
+        this.formFragment = formFragment;
+        mJsonFormInteractor = JsonFormInteractor.getInstance();
+        invalidFields = this.formFragment.getJsonApi().getInvalidFields();
+        incorrectlyFormattedFields = new Stack<>();
     }
 
     public void addFormElements() {
@@ -325,7 +228,7 @@ public class JsonFormFragmentPresenter extends
                 if (key.equals("finger_print")){
                     path = childAt.getTag(R.id.simprints_guid);
                     if (TextUtils.isEmpty((String)path)){
-                        path = childAt.getTag(R.id.imagePath);
+                        path = (String)childAt.getTag(R.id.imagePath);
                     }
                 }
 
