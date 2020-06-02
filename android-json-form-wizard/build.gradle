@@ -43,6 +43,7 @@ android {
                 includeCompileClasspath = true
             }
         }
+        project.archivesBaseName = "opensrp-client-native-form"
     }
 
     buildTypes {
@@ -82,7 +83,7 @@ def getVersionName = { ->
 }
 
 def getArtificatId = { ->
-    return "android-json-form-wizard" // Library name
+    return "opensrp-client-native-form" // Library name
 }
 
 publishing {
