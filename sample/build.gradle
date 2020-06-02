@@ -10,8 +10,19 @@ buildscript {
     }
 }
 
+def githubProperties = new Properties()
+githubProperties.load(new FileInputStream(rootProject.file("github.properties")))
+
 repositories {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/d-tree-org/opensrp-client-simprints")
+        credentials {
+            username = githubProperties['gpr.usr'] ?: System.getenv("GPR_USER")
+            password = githubProperties['gpr.key'] ?: System.getenv("GPR_API_KEY")
+        }
+    }
     mavenLocal()
     google()
 }
