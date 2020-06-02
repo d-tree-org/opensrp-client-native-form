@@ -150,10 +150,18 @@ publishing {
 repositories {
     mavenCentral()
     google()
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/d-tree-org/opensrp-client-simprints")
+        credentials {
+            username = githubProperties['gpr.usr'] ?: System.getenv("GPR_USER")
+            password = githubProperties['gpr.key'] ?: System.getenv("GPR_API_KEY")
+        }
+    }
 }
 
 dependencies {
-    api('org.smartregister:opensrp-client-simprints:1.0.3-SNAPSHOT@aar') {
+    api('org.smartregister:opensrp-client-simprints:1.1.44-support-SNAPSHOT@aar') {
         transitive = true
         exclude group: 'com.android.support', module: 'appcompat-v7'
     }
