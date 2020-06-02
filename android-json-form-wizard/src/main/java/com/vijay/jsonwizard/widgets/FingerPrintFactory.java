@@ -33,9 +33,7 @@ import org.smartregister.simprint.SimPrintsConstantHelper;
 import org.smartregister.simprint.SimPrintsRegistration;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import timber.log.Timber;
 
@@ -87,10 +85,13 @@ public class FingerPrintFactory implements FormWidgetFactory {
                         public void onActivityResult(int requestCode,
                                                      int resultCode, Intent data) {
                             if (requestCode == JsonFormConstants.ACTIVITY_REQUEST_CODE.REQUEST_CODE_REGISTER && resultCode == RESULT_OK) {
+                                // Change the required tag to false as soon as the call come back from the fingerprint facility
+                                imageView.setTag(R.id.v_required, false);
                                 if (data != null) {
 
                                     SimPrintsRegistration registration = (SimPrintsRegistration) data.getSerializableExtra(SimPrintsConstantHelper.INTENT_DATA);
                                     imageView.setTag(R.id.simprints_guid, registration.getGuid());
+                                    imageView.setTag(R.id.imagePath, registration.getGuid());
                                     setFingerprintDrawable(context, imageView, registration.getGuid(), true);
                                     Timber.d("Scanned Fingerprint GUID %s ", registration.getGuid());
                                 } else {
@@ -185,6 +186,7 @@ public class FingerPrintFactory implements FormWidgetFactory {
         view.setTag(R.id.module_id, jsonObject.optString(JsonFormConstants.SIMPRINTS_MODULE_ID));
         view.setTag(R.id.guid, jsonObject.optString(JsonFormConstants.SIMPRINTS_MODULE_ID));
         view.setTag(R.id.finger_print_option, jsonObject.optString(JsonFormConstants.SIMPRINTS_OPTION));
+        view.setTag(R.id.extra_info, jsonObject.optString(JsonFormConstants.FINGERPRINT_EXTRA_INFO));
         view.setTag(com.vijay.jsonwizard.R.id.address, stepName + ":" + jsonObject.getString(JsonFormConstants.KEY));
     }
 
@@ -245,10 +247,5 @@ public class FingerPrintFactory implements FormWidgetFactory {
             view.setTag(com.vijay.jsonwizard.R.id.calculation, calculation);
             ((JsonApi) context).addCalculationLogicView(view);
         }
-    }
-
-    @Override
-    public Set<String> getCustomTranslatableWidgetFields() {
-        return new HashSet<>();
     }
 }
