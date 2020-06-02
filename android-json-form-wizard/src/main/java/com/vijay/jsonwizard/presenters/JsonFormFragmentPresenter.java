@@ -253,35 +253,8 @@ public class JsonFormFragmentPresenter extends
         getView().backClick();
     }
 
-    public Map<String, ValidationStatus> getInvalidFields() {
-        return invalidFields;
-    }
-
-    /**
-     * Check if form is valid
-     *
-     * @return true if invalidFields is empty otherwise false
-     */
-    public boolean isFormValid() {
-        return getInvalidFields().size() == 0;
-    }
-
     public Stack<String> getIncorrectlyFormattedFields() {
         return incorrectlyFormattedFields;
-    }
-
-    public boolean validateOnSubmit() {
-        JSONObject entireJsonForm = formFragment.getJsonApi().getmJSONObject();
-        return entireJsonForm.optBoolean(JsonFormConstants.VALIDATE_ON_SUBMIT, false);
-    }
-
-    public boolean showErrorsOnSubmit() {
-        JSONObject entireJsonForm = formFragment.getJsonApi().getmJSONObject();
-        return entireJsonForm.optBoolean(JsonFormConstants.SHOW_ERRORS_ON_SUBMIT, false);
-    }
-
-    private String getStepTitle() {
-        return mStepDetails.optString(JsonFormConstants.STEP_TITLE);
     }
 
     public JsonFormErrorFragment getErrorFragment() {
@@ -290,26 +263,6 @@ public class JsonFormFragmentPresenter extends
 
     public void setErrorFragment(JsonFormErrorFragment errorFragment) {
         this.errorFragment = errorFragment;
-    }
-
-    protected void launchErrorDialog() {
-        if (errorFragment == null) {
-            errorFragment = new JsonFormErrorFragment();
-        }
-        FragmentManager fm = ((JsonFormFragment) getView()).getChildFragmentManager();
-        @SuppressLint("CommitTransaction") FragmentTransaction ft = fm.beginTransaction();
-        errorFragment.show(ft, JsonFormErrorFragment.TAG);
-    }
-
-    private boolean moveToNextStep() {
-        if (!"".equals(mStepDetails.optString(JsonFormConstants.NEXT))) {
-            JsonFormFragment next = JsonFormFragment
-                    .getFormFragment(mStepDetails.optString(JsonFormConstants.NEXT));
-            getView().hideKeyBoard();
-            getView().transactThis(next);
-            return true;
-        }
-        return false;
     }
 
     public boolean onNextClick(LinearLayout mainView) {
@@ -326,7 +279,6 @@ public class JsonFormFragmentPresenter extends
         }
         return false;
     }
-
 
     public void validateAndWriteValues() {
         for (View childAt : formFragment.getJsonApi().getFormDataViews()) {
@@ -369,6 +321,14 @@ public class JsonFormFragmentPresenter extends
                         openMrsEntityId, popup);
             } else if (childAt instanceof ImageView) {
                 Object path = childAt.getTag(R.id.imagePath);
+
+                if (key.equals("finger_print")){
+                    path = childAt.getTag(R.id.simprints_guid);
+                    if (TextUtils.isEmpty((String)path)){
+                        path = childAt.getTag(R.id.imagePath);
+                    }
+                }
+
                 if (path instanceof String) {
                     getView().writeValue(mStepName, key, (String) path, openMrsEntityParent, openMrsEntity,
                             openMrsEntityId,
@@ -407,6 +367,64 @@ public class JsonFormFragmentPresenter extends
         formFragment.onFieldsInvalid.passInvalidFields(invalidFields);
     }
 
+    public void checkAndStopCountdownAlarm() {
+        // Check if alarm is ringing and stop
+        JSONObject formJSONObject = null;
+        JSONObject fieldObject = null;
+        try {
+            formJSONObject = new JSONObject(formFragment.getCurrentJsonState());
+            JSONArray fields = FormUtils.fields(formJSONObject, mStepName);
+            for (int i = 0; i < fields.length(); i++) {
+                fieldObject = (JSONObject) fields.get(i);
+                if (fieldObject.has(JsonFormConstants.COUNTDOWN_TIME_VALUE)) {
+                    CountDownTimerFactory.stopAlarm();
+                }
+            }
+        } catch (Exception ex) {
+            Log.w(TAG, "Countdown alarm not stopped");
+            ex.printStackTrace();
+        }
+    }
+
+    public boolean validateOnSubmit() {
+        JSONObject entireJsonForm = formFragment.getJsonApi().getmJSONObject();
+        return entireJsonForm.optBoolean(JsonFormConstants.VALIDATE_ON_SUBMIT, false);
+    }
+
+    private boolean moveToNextStep() {
+        if (!"".equals(mStepDetails.optString(JsonFormConstants.NEXT))) {
+            JsonFormFragment next = JsonFormFragment
+                    .getFormFragment(mStepDetails.optString(JsonFormConstants.NEXT));
+            getView().hideKeyBoard();
+            getView().transactThis(next);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if form is valid
+     *
+     * @return true if invalidFields is empty otherwise false
+     */
+    public boolean isFormValid() {
+        return getInvalidFields().size() == 0;
+    }
+
+    /**
+     * Validates the passed view
+     *
+     * @param childAt view to be validated
+     * @return ValidationStatus for the view
+     */
+    private ValidationStatus validateView(View childAt) {
+        return validate(getView(), childAt, true);
+    }
+
+    private String getStepTitle() {
+        return mStepDetails.optString(JsonFormConstants.STEP_TITLE);
+    }
+
     private void handleWrongFormatInputs(ValidationStatus validationStatus, String fieldKey,
                                          String rawValue) {
         if (!TextUtils.isEmpty(rawValue) && !validationStatus.isValid()) {
@@ -420,14 +438,106 @@ public class JsonFormFragmentPresenter extends
         }
     }
 
-    /**
-     * Validates the passed view
-     *
-     * @param childAt view to be validated
-     * @return ValidationStatus for the view
-     */
-    private ValidationStatus validateView(View childAt) {
-        return validate(getView(), childAt, true);
+    public Map<String, ValidationStatus> getInvalidFields() {
+        return invalidFields;
+    }
+
+    public static ValidationStatus validate(JsonFormFragmentView formFragmentView, View childAt,
+                                            boolean requestFocus) {
+        if (childAt instanceof RadioGroup) {
+            RadioGroup radioGroup = (RadioGroup) childAt;
+            ValidationStatus validationStatus = NativeRadioButtonFactory
+                    .validate(formFragmentView, radioGroup);
+            if (!validationStatus.isValid()) {
+                if (requestFocus) {
+                    validationStatus.requestAttention();
+                }
+                return validationStatus;
+            }
+        } else if (childAt instanceof NativeEditText) {
+            NativeEditText editText = (NativeEditText) childAt;
+            ValidationStatus validationStatus = NativeEditTextFactory
+                    .validate(formFragmentView, editText);
+            if (!validationStatus.isValid()) {
+                if (requestFocus) {
+                    validationStatus.requestAttention();
+                }
+                return validationStatus;
+            }
+        } else if (childAt instanceof MaterialEditText) {
+            MaterialEditText editText = (MaterialEditText) childAt;
+            ValidationStatus validationStatus = EditTextFactory.validate(formFragmentView, editText);
+            if (!validationStatus.isValid()) {
+                if (requestFocus) {
+                    validationStatus.requestAttention();
+                }
+                return validationStatus;
+            }
+        } else if (childAt instanceof ImageView) {
+            ValidationStatus validationStatus = ImagePickerFactory
+                    .validate(formFragmentView, (ImageView) childAt);
+            if (!validationStatus.isValid()) {
+                if (requestFocus) {
+                    validationStatus.requestAttention();
+                }
+                return validationStatus;
+            }
+        } else if (childAt instanceof Button) {
+            String type = (String) childAt.getTag(R.id.type);
+            if (!TextUtils.isEmpty(type) && type.equals(JsonFormConstants.GPS)) {
+                ValidationStatus validationStatus = GpsFactory.validate(formFragmentView, (Button) childAt);
+                if (!validationStatus.isValid()) {
+                    if (requestFocus) {
+                        validationStatus.requestAttention();
+                    }
+                    return validationStatus;
+                }
+            }
+        } else if (childAt instanceof MaterialSpinner) {
+            MaterialSpinner spinner = (MaterialSpinner) childAt;
+            ValidationStatus validationStatus = SpinnerFactory.validate(formFragmentView, spinner);
+            if (!validationStatus.isValid()) {
+                if (requestFocus) {
+                    validationStatus.requestAttention();
+                }
+                setSpinnerError(spinner, validationStatus.getErrorMessage());
+                return validationStatus;
+            }
+        } else if (childAt instanceof ViewGroup
+                && childAt.getTag(R.id.is_checkbox_linear_layout) != null &&
+                Boolean.TRUE.equals(childAt.getTag(R.id.is_checkbox_linear_layout))) {
+            LinearLayout checkboxLinearLayout = (LinearLayout) childAt;
+            ValidationStatus validationStatus = CheckBoxFactory
+                    .validate(formFragmentView, checkboxLinearLayout);
+            if (!validationStatus.isValid()) {
+                if (requestFocus) {
+                    validationStatus.requestAttention();
+                }
+                return validationStatus;
+            }
+
+        } else if (childAt instanceof ViewGroup
+                && childAt.getTag(R.id.is_number_selector_linear_layout) != null &&
+                Boolean.TRUE.equals(childAt.getTag(R.id.is_number_selector_linear_layout))) {
+            ValidationStatus validationStatus = NumberSelectorFactory
+                    .validate(formFragmentView, (ViewGroup) childAt);
+            if (!validationStatus.isValid()) {
+                if (requestFocus) {
+                    validationStatus.requestAttention();
+                }
+                return validationStatus;
+            }
+        }
+
+        return new ValidationStatus(true, null, null, null);
+    }
+
+    private static void setSpinnerError(MaterialSpinner spinner, String spinnerError) {
+        try {
+            spinner.setError(spinnerError);
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, e.getMessage(), e);
+        }
     }
 
     public void onSaveClick(LinearLayout mainView) {
@@ -452,6 +562,20 @@ public class JsonFormFragmentPresenter extends
 
             }
         }
+    }
+
+    public boolean showErrorsOnSubmit() {
+        JSONObject entireJsonForm = formFragment.getJsonApi().getmJSONObject();
+        return entireJsonForm.optBoolean(JsonFormConstants.SHOW_ERRORS_ON_SUBMIT, false);
+    }
+
+    protected void launchErrorDialog() {
+        if (errorFragment == null) {
+            errorFragment = new JsonFormErrorFragment();
+        }
+        FragmentManager fm = ((JsonFormFragment) getView()).getChildFragmentManager();
+        @SuppressLint("CommitTransaction") FragmentTransaction ft = fm.beginTransaction();
+        errorFragment.show(ft, JsonFormErrorFragment.TAG);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -490,6 +614,61 @@ public class JsonFormFragmentPresenter extends
                 break;
 
         }
+    }
+
+    private void dispatchTakePictureIntent(String key, String type) {
+        if (PermissionUtils.isPermissionGranted(formFragment,
+                new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                PermissionUtils.CAMERA_PERMISSION_REQUEST_CODE)) {
+
+            if (JsonFormConstants.CHOOSE_IMAGE.equals(type)) {
+                getView().hideKeyBoard();
+                mCurrentKey = key;
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (takePictureIntent.resolveActivity(getView().getContext().getPackageManager()) != null) {
+                    File imageFile = null;
+                    try {
+                        imageFile = createImageFile();
+                    } catch (IOException e) {
+                        Log.e(TAG, Log.getStackTraceString(e));
+                    }
+
+                    if (imageFile != null) {
+                        Uri photoURI = FileProvider.getUriForFile(getView().getContext(),
+                                getView().getContext().getPackageName() + "" + ".fileprovider", imageFile);
+
+                        // Grant permission to the default camera app
+                        PackageManager packageManager = getView().getContext().getPackageManager();
+                        Context applicationContext = getView().getContext().getApplicationContext();
+
+                        applicationContext
+                                .grantUriPermission(
+                                        takePictureIntent.resolveActivity(packageManager).getPackageName(),
+                                        photoURI,
+                                        Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+                        applicationContext.grantUriPermission("com.vijay.jsonwizard", photoURI,
+                                Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                        getView().startActivityForResult(takePictureIntent, RESULT_LOAD_IMG);
+                    }
+                }
+            }
+        }
+    }
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getView().getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
     }
 
     public void onClick(View v) {
@@ -558,12 +737,12 @@ public class JsonFormFragmentPresenter extends
         String userId = (String) v.getTag(R.id.user_id);
         String moduleId = (String) v.getTag(R.id.module_id);
         String fingerPrintOption = (String) v.getTag(R.id.finger_print_option);
-        if(!TextUtils.isEmpty(fingerPrintOption) && fingerPrintOption.equalsIgnoreCase(JsonFormConstants.SIMPRINTS_OPTION_REGISTER)){
-            getView().startSimprintsRegistration(projectId,userId,moduleId);
+        if (!TextUtils.isEmpty(fingerPrintOption) && fingerPrintOption.equalsIgnoreCase(JsonFormConstants.SIMPRINTS_OPTION_REGISTER)) {
+            getView().startSimprintsRegistration(projectId, userId, moduleId);
 
-        }else if(!TextUtils.isEmpty(fingerPrintOption) && fingerPrintOption.equalsIgnoreCase(JsonFormConstants.SIMPRINTS_OPTION_VERIFY)){
-           String guId = (String) v.getTag(R.id.guid);
-            getView().startSimprintsVerification(projectId,userId,moduleId,guId);
+        } else if (!TextUtils.isEmpty(fingerPrintOption) && fingerPrintOption.equalsIgnoreCase(JsonFormConstants.SIMPRINTS_OPTION_VERIFY)) {
+            String guId = (String) v.getTag(R.id.guid);
+            getView().startSimprintsVerification(projectId, userId, moduleId, guId);
         }
 
     }
@@ -718,61 +897,6 @@ public class JsonFormFragmentPresenter extends
     public void onClickCameraIcon(String key, String type) {
 
         dispatchTakePictureIntent(key, type);
-    }
-
-    private void dispatchTakePictureIntent(String key, String type) {
-        if (PermissionUtils.isPermissionGranted(formFragment,
-                new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                PermissionUtils.CAMERA_PERMISSION_REQUEST_CODE)) {
-
-            if (JsonFormConstants.CHOOSE_IMAGE.equals(type)) {
-                getView().hideKeyBoard();
-                mCurrentKey = key;
-                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                if (takePictureIntent.resolveActivity(getView().getContext().getPackageManager()) != null) {
-                    File imageFile = null;
-                    try {
-                        imageFile = createImageFile();
-                    } catch (IOException e) {
-                        Log.e(TAG, Log.getStackTraceString(e));
-                    }
-
-                    if (imageFile != null) {
-                        Uri photoURI = FileProvider.getUriForFile(getView().getContext(),
-                                getView().getContext().getPackageName() + "" + ".fileprovider", imageFile);
-
-                        // Grant permission to the default camera app
-                        PackageManager packageManager = getView().getContext().getPackageManager();
-                        Context applicationContext = getView().getContext().getApplicationContext();
-
-                        applicationContext
-                                .grantUriPermission(
-                                        takePictureIntent.resolveActivity(packageManager).getPackageName(),
-                                        photoURI,
-                                        Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-
-                        applicationContext.grantUriPermission("com.vijay.jsonwizard", photoURI,
-                                Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-
-                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                        getView().startActivityForResult(takePictureIntent, RESULT_LOAD_IMG);
-                    }
-                }
-            }
-        }
-    }
-
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getView().getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
-
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = image.getAbsolutePath();
-        return image;
     }
 
     public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
@@ -942,25 +1066,6 @@ public class JsonFormFragmentPresenter extends
         }
 
         return false;
-    }
-
-    public void checkAndStopCountdownAlarm() {
-        // Check if alarm is ringing and stop
-        JSONObject formJSONObject = null;
-        JSONObject fieldObject = null;
-        try {
-            formJSONObject = new JSONObject(formFragment.getCurrentJsonState());
-            JSONArray fields = FormUtils.fields(formJSONObject, mStepName);
-            for (int i = 0; i < fields.length(); i++) {
-                fieldObject = (JSONObject) fields.get(i);
-                if (fieldObject.has(JsonFormConstants.COUNTDOWN_TIME_VALUE)) {
-                    CountDownTimerFactory.stopAlarm();
-                }
-            }
-        } catch (Exception ex) {
-            Log.w(TAG, "Countdown alarm not stopped");
-            ex.printStackTrace();
-        }
     }
 
     public String getmCurrentPhotoPath() {
