@@ -11,10 +11,15 @@
     tools:context="org.smartregister.nativeform.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
         <Button
             android:id="@+id/child_enrollment"
@@ -111,5 +116,18 @@
             android:textColor="@android:color/white"
             android:theme="@style/NativeFormsAppTheme" />
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/form_results"
+                android:layout_gravity="center"
+                android:textColor="@color/primary"
+                android:text="Results will be shown here"
+                />
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
 </RelativeLayout>
