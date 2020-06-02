@@ -12,7 +12,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import com.google.android.gms.vision.barcode.Barcode;
+import com.rengwuxian.materialedittext.MaterialEditText;
 import com.rey.material.util.ViewUtil;
 import com.vijay.jsonwizard.R;
 import com.vijay.jsonwizard.constants.JsonFormConstants;
@@ -68,7 +71,7 @@ public class FingerPrintFactory implements FormWidgetFactory {
 
     @Override
     public List<View> getViewsFromJson(String stepName, Context context, JsonFormFragment formFragment, JSONObject jsonObject, CommonListener listener, boolean popup) throws Exception {
-        return attachJson(stepName, context, jsonObject, listener, popup);
+                return attachJson(stepName, context, jsonObject, listener, popup);
     }
 
     @Override
@@ -76,7 +79,7 @@ public class FingerPrintFactory implements FormWidgetFactory {
         return attachJson(stepName, context, jsonObject, listener, false);
     }
 
-    private void addFingerprintResultsListener(final Context context, final ImageView imageView) {
+    protected void addFingerprintResultsListener(final Context context, final ImageView imageView) {
         if (context instanceof JsonApi) {
             JsonApi jsonApi = (JsonApi) context;
             jsonApi.addOnActivityResultListener(JsonFormConstants.ACTIVITY_REQUEST_CODE.REQUEST_CODE_REGISTER,
@@ -186,7 +189,6 @@ public class FingerPrintFactory implements FormWidgetFactory {
         view.setTag(R.id.module_id, jsonObject.optString(JsonFormConstants.SIMPRINTS_MODULE_ID));
         view.setTag(R.id.guid, jsonObject.optString(JsonFormConstants.SIMPRINTS_MODULE_ID));
         view.setTag(R.id.finger_print_option, jsonObject.optString(JsonFormConstants.SIMPRINTS_OPTION));
-        view.setTag(R.id.extra_info, jsonObject.optString(JsonFormConstants.FINGERPRINT_EXTRA_INFO));
         view.setTag(com.vijay.jsonwizard.R.id.address, stepName + ":" + jsonObject.getString(JsonFormConstants.KEY));
     }
 
