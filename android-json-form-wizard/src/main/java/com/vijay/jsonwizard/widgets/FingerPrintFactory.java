@@ -117,7 +117,6 @@ public class FingerPrintFactory implements FormWidgetFactory {
         } else {
             imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.finger_print));
         }
-
     }
 
     private List<View> attachJson(String stepName, Context context, JSONObject jsonObject, CommonListener listener, boolean popup) throws JSONException {
