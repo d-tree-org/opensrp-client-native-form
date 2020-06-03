@@ -33,7 +33,9 @@ import org.smartregister.simprint.SimPrintsConstantHelper;
 import org.smartregister.simprint.SimPrintsRegistration;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import timber.log.Timber;
 
@@ -246,5 +248,10 @@ public class FingerPrintFactory implements FormWidgetFactory {
             view.setTag(com.vijay.jsonwizard.R.id.calculation, calculation);
             ((JsonApi) context).addCalculationLogicView(view);
         }
+    }
+
+    @Override
+    public Set<String> getCustomTranslatableWidgetFields() {
+        return new HashSet<>();
     }
 }

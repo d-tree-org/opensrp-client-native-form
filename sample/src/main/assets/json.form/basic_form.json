@@ -5,6 +5,7 @@
   "relational_id": "",
   "validate_on_submit": true,
   "show_errors_on_submit": true,
+  "properties_file_name": "basic_form",
   "metadata": {
     "start": {
       "openmrs_entity_parent": "",
@@ -104,7 +105,7 @@
         "openmrs_entity": "",
         "openmrs_entity_id": "",
         "type": "edit_text",
-        "hint": "User First name",
+        "hint": "{{first_name}}",
         "edit_type": "name",
         "v_required": {
           "value": "true",

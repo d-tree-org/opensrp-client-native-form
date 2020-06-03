@@ -160,4 +160,19 @@ public class NativeFormLangUtils {
         Matcher matcher = propertiesFileNamePattern.matcher(str);
         return matcher.find() ? matcher.group(1) : "";
     }
+
+    /**
+     * Get the individual translated value
+     *
+     * @param str
+     * @return
+     */
+    public static String getTranslatedValue(String str, String translationsFileName, Context context) {
+        if (translationsFileName.isEmpty()) {
+            Timber.e("Could not translate the String. Translation file name is not specified!");
+            return str;
+        }
+        Locale currLocale = context == null ? Locale.getDefault() : getLocale(context);
+        return translateString(str, ResourceBundle.getBundle(translationsFileName, currLocale));
+    }
 }
