@@ -239,6 +239,7 @@ public class JsonFormConstants {
         String ALPHABET_SORTING = "com.vijay.jsonwizard.comparator.MultiSelectListAlphabetComparator";
         String FILES_LOCATION = "native.form/multiselectlist";
         String REPOSITORY_CLASS = "repositoryClass";
+        String MAX_SELECT_MESSAGE="maxSelectMessage";
     }
 
     public static class Properties {
