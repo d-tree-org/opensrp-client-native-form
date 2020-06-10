@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.rey.material.util.ViewUtil;
 import com.vijay.jsonwizard.R;
@@ -349,7 +350,7 @@ public class MultiSelectListFactory implements FormWidgetFactory {
         return recyclerView;
     }
 
-    protected RelativeLayout createActionView(@NonNull Context context) {
+    protected RelativeLayout createActionView(@NonNull final Context context) {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         final RelativeLayout relativeLayout = (RelativeLayout) layoutInflater.inflate(R.layout.multi_select_list_action_layout, null);
         relativeLayout.setTag(R.id.key, currentAdapterKey);
@@ -357,6 +358,7 @@ public class MultiSelectListFactory implements FormWidgetFactory {
         btn_multi_select_action.setText(jsonObject.optString(JsonFormConstants.MultiSelectUtils.BUTTON_TEXT));
         btn_multi_select_action.setTypeface(Typeface.DEFAULT);
         btn_multi_select_action.setTag(R.id.maxSelectable, jsonObject.optString(JsonFormConstants.MultiSelectUtils.MAX_SELECTABLE));
+        btn_multi_select_action.setTag(R.id.maxSelectMessage, jsonObject.optString(JsonFormConstants.MultiSelectUtils.MAX_SELECT_MESSAGE));
         btn_multi_select_action.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -367,6 +369,8 @@ public class MultiSelectListFactory implements FormWidgetFactory {
                     maxSelectable = Integer.parseInt(strMaxSelectable);
                     List<MultiSelectItem> multiSelectItems = getMultiSelectListSelectedAdapter().getData();
                     if ((multiSelectItems.size() >= maxSelectable) && !multiSelectItems.isEmpty()) {
+                        String message = (String) v.getTag(R.id.maxSelectMessage);
+                        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
                         return;
                     }
                 }
