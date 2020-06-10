@@ -1,5 +1,10 @@
 package com.vijay.jsonwizard.rules;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -94,6 +99,16 @@ public class RulesEngineHelper {
             }
         }
         return "";
+    }
+
+    public List<String> getSelectedItemsFromMultiSelect(String str) throws JSONException {
+        JSONArray jsonArray = new JSONArray(str);
+        List<String> listOfSelected = new ArrayList<>();
+        for (int i=0; i < jsonArray.length(); i++) {
+            JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+            listOfSelected.add(jsonObject.getString("text"));
+        }
+        return listOfSelected;
     }
 
 }
