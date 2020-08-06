@@ -48,7 +48,7 @@ public class RulesEngineFactory implements RuleListener {
         this.ruleMap = new HashMap<>();
         gson = new Gson();
         this.globalValues = globalValues;
-        this.rulesEngineHelper = new RulesEngineHelper();
+        this.rulesEngineHelper = new RulesEngineHelper(context);
 
     }
 
