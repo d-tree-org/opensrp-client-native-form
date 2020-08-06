@@ -107,7 +107,11 @@ public class RulesEngineHelper {
     }
 
     public String getTranslatedWeeks() {
-        return context.getResources().getString(R.string.weeks);
+        if (context != null) {
+            return context.getResources().getString(R.string.weeks);
+        } else {
+            return "weeks";
+        }
 
     }
 
