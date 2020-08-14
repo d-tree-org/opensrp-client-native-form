@@ -1,5 +1,10 @@
 package com.vijay.jsonwizard.rules;
 
+import android.content.Context;
+
+import com.vijay.jsonwizard.R;
+import com.vijay.jsonwizard.utils.NativeFormLangUtils;
+
 import java.util.List;
 
 /**
@@ -9,7 +14,16 @@ import java.util.List;
  */
 public class RulesEngineHelper {
 
-    private RulesEngineDateUtil rulesEngineDateUtil = new RulesEngineDateUtil();
+    private RulesEngineDateUtil rulesEngineDateUtil;
+    private Context context;
+
+    public RulesEngineHelper(Context context) {
+        this.context = context;
+        this.rulesEngineDateUtil  = new RulesEngineDateUtil();
+    }
+
+    public RulesEngineHelper() {
+    }
 
     public long getDifferenceDays(String dateString) {
         return rulesEngineDateUtil.getDifferenceDays(dateString);
@@ -90,6 +104,15 @@ public class RulesEngineHelper {
             }
         }
         return "";
+    }
+
+    public String getTranslatedWeeks() {
+        if (context != null) {
+            return context.getResources().getString(R.string.weeks);
+        } else {
+            return "weeks";
+        }
+
     }
 
 }

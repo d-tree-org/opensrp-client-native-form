@@ -72,6 +72,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -144,6 +145,8 @@ public class JsonFormFragmentPresenter extends
 
         if (mStepDetails.has("next")) {
             getView().updateVisibilityOfNextAndSave(true, false);
+        } else if (mStepDetails.has("submit-button")) {
+            getView().updateVisibilityOfNextAndSave(false, false);
         } else {
             getView().updateVisibilityOfNextAndSave(false, true);
         }
@@ -638,14 +641,44 @@ public class JsonFormFragmentPresenter extends
         String userId = (String) v.getTag(R.id.user_id);
         String moduleId = (String) v.getTag(R.id.module_id);
         String fingerPrintOption = (String) v.getTag(R.id.finger_print_option);
+        String stepName = (String) v.getTag(R.id.address).toString().split(":")[0];
+        String extraInfoString = v.getTag(R.id.extra_info).toString();
+        JSONObject currentMetaData = null;
+        JSONObject currentFormState = null;
+        if (!extraInfoString.isEmpty()) {
+            try {
+                currentFormState = new JSONObject(getView().getCurrentJsonState());
+                currentMetaData = new JSONObject(extraInfoString);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            modifyWidgetMetaData(stepName, currentFormState, currentMetaData);
+        }
         if (!TextUtils.isEmpty(fingerPrintOption) && fingerPrintOption.equalsIgnoreCase(JsonFormConstants.SIMPRINTS_OPTION_REGISTER)) {
-            getView().startSimprintsRegistration(projectId, userId, moduleId);
+            this.getView().startSimprintsRegistration(projectId, userId, moduleId, currentMetaData);
 
         } else if (!TextUtils.isEmpty(fingerPrintOption) && fingerPrintOption.equalsIgnoreCase(JsonFormConstants.SIMPRINTS_OPTION_VERIFY)) {
             String guId = (String) v.getTag(R.id.guid);
             getView().startSimprintsVerification(projectId, userId, moduleId, guId);
         }
 
+    }
+
+    protected void modifyWidgetMetaData(String stepName, JSONObject currentFormState, JSONObject fieldMetaData) {
+
+        try {
+            JSONObject step1Data = currentFormState.getJSONObject(stepName);
+            JSONArray fields = step1Data.getJSONArray(JsonFormConstants.FIELDS);
+            Iterator<String> extraInfoKeys = fieldMetaData.keys();
+            while (extraInfoKeys.hasNext()) {
+                String extraInfoKey = (String) extraInfoKeys.next();
+                String fieldNameToGetInfo = fieldMetaData.getString(extraInfoKey);
+                String currentFieldvalue = (String) FormUtils.getFieldJSONObject(fields, fieldNameToGetInfo).get(JsonFormConstants.VALUE);
+                fieldMetaData.put(extraInfoKey, currentFieldvalue);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     protected void nativeRadioButtonClickActions(View view) {

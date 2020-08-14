@@ -66,7 +66,7 @@ def githubProperties = new Properties()
 githubProperties.load(new FileInputStream(rootProject.file("github.properties")))
 
 def getVersionName = { ->
-    return "1.7.22-SNAPSHOT" // Library version
+    return "1.7.25-DTREE-3-SNAPSHOT" // Library version
 }
 
 def getArtificatId = { ->
@@ -137,10 +137,18 @@ publishing {
 repositories {
     mavenCentral()
     google()
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/d-tree-org/opensrp-client-simprints")
+        credentials {
+            username = githubProperties['gpr.usr'] ?: System.getenv("GPR_USER")
+            password = githubProperties['gpr.key'] ?: System.getenv("GPR_API_KEY")
+        }
+    }
 }
 
 dependencies {
-    api('org.smartregister:opensrp-client-simprints:1.0.3-SNAPSHOT@aar') {
+    api('org.smartregister:opensrp-client-simprints:1.1.44-support-SNAPSHOT@aar') {
         transitive = true
         exclude group: 'com.android.support', module: 'appcompat-v7'
     }
@@ -196,7 +204,7 @@ dependencies {
     }
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'org.greenrobot:eventbus:3.1.1'
-    implementation 'androidx.multidex:multidex:2.0.0'
+    implementation 'androidx.multidex:multidex:2.0.1'
 
     // PowerMock
     def powerMockVersion = '2.0.4'

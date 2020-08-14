@@ -90,4 +90,5 @@
     <string name="permission_messege">App inahitaji ruhusa hiyo ya kukamata habari ya kifaa kinachohitajika wakati wa kuwasilisha fomu. Bila ruhusa hiyo, appK haitafanya kazi vizuri. Je, una uhakika unataka kukataa ruhusa hiyo? </string>
     <string name="multiselect_msg_on_item_added">Ongezwa</string>
     <string name="loading_multi_select_list">Inapakia</string>
+    <string name="weeks">wiki</string>
 </resources>
