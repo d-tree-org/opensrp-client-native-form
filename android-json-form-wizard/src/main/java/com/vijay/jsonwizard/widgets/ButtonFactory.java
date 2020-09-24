@@ -137,6 +137,7 @@ public class ButtonFactory implements FormWidgetFactory {
                                     formFragment.next();
                                     break;
                                 default:
+                                    button.setTag(R.id.raw_value, Boolean.TRUE.toString());
                                     formFragment.customClick(context, behaviour);
                                     break;
                             }
