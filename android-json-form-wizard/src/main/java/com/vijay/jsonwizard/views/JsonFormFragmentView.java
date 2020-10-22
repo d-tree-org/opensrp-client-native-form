@@ -45,6 +45,8 @@ public interface JsonFormFragmentView<V extends ViewState> extends MvpView {
 
     void updateVisibilityOfNextAndSave(boolean next, boolean save);
 
+    void previousAndNextButtonVisibility(boolean prev, boolean next);
+
     void hideKeyBoard();
 
     void transactThis(JsonFormFragment next);

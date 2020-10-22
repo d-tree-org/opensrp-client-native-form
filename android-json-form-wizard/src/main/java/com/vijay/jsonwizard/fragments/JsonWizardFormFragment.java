@@ -263,6 +263,23 @@ public class JsonWizardFormFragment extends JsonFormFragment {
         }
     }
 
+    @Override
+    public void previousAndNextButtonVisibility(boolean prev, boolean next) {
+        if (!prev && !next) {
+            previousButton.setVisibility(View.GONE);
+            nextButton.setVisibility(View.GONE);
+        } else if(!prev) {
+            previousButton.setVisibility(View.GONE);
+            nextButton.setVisibility(View.VISIBLE);
+        } else if(!next) {
+            nextButton.setVisibility(View.GONE);
+            previousButton.setVisibility(View.VISIBLE);
+        } else {
+            nextButton.setVisibility(View.VISIBLE);
+            previousButton.setVisibility(View.VISIBLE);
+        }
+    }
+
     /**
      * Skips blank by relevance steps when next is clicked on the json wizard forms.
      */

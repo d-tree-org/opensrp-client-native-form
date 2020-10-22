@@ -362,6 +362,23 @@ public class JsonFormFragment extends MvpFragment<JsonFormFragmentPresenter, Jso
     }
 
     @Override
+    public void previousAndNextButtonVisibility(boolean prev, boolean next) {
+        if (!prev && !next) {
+            previousButton.setVisibility(View.GONE);
+            nextButton.setVisibility(View.GONE);
+        } else if(!prev) {
+            previousButton.setVisibility(View.GONE);
+            nextButton.setVisibility(View.VISIBLE);
+        } else if(!next) {
+            nextButton.setVisibility(View.GONE);
+            previousButton.setVisibility(View.VISIBLE);
+        } else {
+            nextButton.setVisibility(View.VISIBLE);
+            previousButton.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
     public void hideKeyBoard() {
         super.hideSoftKeyboard();
     }

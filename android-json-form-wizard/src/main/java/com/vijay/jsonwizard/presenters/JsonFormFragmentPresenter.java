@@ -148,6 +148,9 @@ public class JsonFormFragmentPresenter extends
 
         if (mStepDetails.has("next")) {
             getView().updateVisibilityOfNextAndSave(true, false);
+        } else if (mStepDetails.has("hide-save-button")) {
+            getView().updateVisibilityOfNextAndSave(false,false);
+            getView().previousAndNextButtonVisibility(true, false);
         } else {
             getView().updateVisibilityOfNextAndSave(false, true);
         }
