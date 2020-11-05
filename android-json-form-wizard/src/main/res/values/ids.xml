@@ -84,6 +84,7 @@
     <item name="error_textView" type="id" />
     <item name="maxSelectable" type="id"/>
     <item name="maxSelectMessage" type="id" />
+    <item name="is_multiselect_relative_layout" type="id" />
 
     <item name="simprints_guid" type="id" />
 
