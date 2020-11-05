@@ -55,13 +55,16 @@
   },
   "step1": {
     "title": "Basic Form One",
-    "next": "step2",
     "fields": [
       {
         "key": "user_dummy",
         "openmrs_entity_parent": "",
         "openmrs_entity": "",
         "openmrs_entity_id": "",
+        "v_required": {
+          "value": true,
+          "err": "Please select at least one from below"
+        },
         "buttonText": "+ Add disease code",
         "sort": true,
         "groupings": "[A,B]",
