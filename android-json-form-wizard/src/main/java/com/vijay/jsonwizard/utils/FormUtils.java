@@ -286,6 +286,18 @@ public class FormUtils {
                 }
                 simSerial.put(JsonFormConstants.VALUE, value);
             }
+
+            if (form.getJSONObject(METADATA_PROPERTY).has(PropertyManager.FIREBASE_INSTANCE_ID)) {
+                JSONObject firebaseInstanceId = form.getJSONObject(METADATA_PROPERTY)
+                        .getJSONObject(PropertyManager.FIREBASE_INSTANCE_ID);
+                String value = propertyManager.getSingularProperty(
+                        PropertyManager.FIREBASE_INSTANCE_ID
+                );
+                if (value == null) {
+                    value = "";
+                }
+                firebaseInstanceId.put(JsonFormConstants.VALUE, value);
+            }
         }
     }
 

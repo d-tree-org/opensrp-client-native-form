@@ -3,11 +3,14 @@ buildscript {
         google()
         mavenCentral()
         jcenter()
+        maven { url 'https://plugins.gradle.org/m2' }
     }
 
     dependencies {
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.11.0"
         classpath ('com.android.tools.build:gradle:3.5.3')
+        classpath 'gradle.plugin.org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.10.2'
+        classpath 'com.google.gms:google-services:4.3.4'
     }
 }
 configure(allprojects) { project ->
@@ -22,6 +25,7 @@ configure(allprojects) { project ->
             maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
             maven { url 'https://plugins.gradle.org/m2/'}
             mavenLocal()
+            google()
         }
     }
 }
@@ -30,11 +34,11 @@ subprojects {
 
     group = 'org.smartregister'
 
-    ext.androidToolsBuildGradle = '28.0.3'
-    ext.androidBuildToolsVersion = '28.0.3'
+    ext.androidToolsBuildGradle = '29.0.3'
+    ext.androidBuildToolsVersion = '29.0.3'
     ext.androidMinSdkVersion = 18
-    ext.androidCompileSdkVersion = 28
-    ext.androidTargetSdkVersion = 28
+    ext.androidCompileSdkVersion = 29
+    ext.androidTargetSdkVersion = 29
 
     ext.androidAnnotationsVersion = '3.0.1'
     ext.androidAnnotationsAPIVersion = '3.0.1'
