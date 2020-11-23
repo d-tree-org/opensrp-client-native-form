@@ -23,14 +23,29 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.provider.Settings;
+
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+
 import android.telephony.TelephonyManager;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.installations.FirebaseInstallations;
+import com.google.firebase.installations.InstallationTokenResult;
 import com.vijay.jsonwizard.interfaces.JsonApi;
 import com.vijay.jsonwizard.interfaces.OnActivityRequestPermissionResultListener;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.HashMap;
 import java.util.Locale;
+
+import timber.log.Timber;
 
 /**
  * Used to return JavaRosa type device properties
@@ -46,6 +61,7 @@ public class PropertyManager {
     private Context mContext;
 
     public final static String DEVICE_ID_PROPERTY = "deviceid"; // imei
+    public final static String FIREBASE_INSTANCE_ID = "firebaseinstanceid";
     public final static String SUBSCRIBER_ID_PROPERTY = "subscriberid"; // imsi
     public final static String SIM_SERIAL_PROPERTY = "simserial";
     public final static String PHONE_NUMBER_PROPERTY = "phonenumber";
@@ -55,11 +71,18 @@ public class PropertyManager {
     public PropertyManager(Context context) {
         mContext = context;
         mProperties = new HashMap<>();
-        grantPhoneStatePermission();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            grantPhoneStatePermission();
+        }
         handleOnRequestPermissionResults();
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE)
-                == PackageManager.PERMISSION_GRANTED) {
-           addPhoneProperties();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                addPhoneProperties();
+            }
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            addFirebaseInstanceId();
         }
     }
 
@@ -124,31 +147,54 @@ public class PropertyManager {
     @SuppressLint("MissingPermission")
     private void addPhoneProperties() {
         mTelephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
-        String deviceId = getDeviceId();
-        if (deviceId == null) {
-            // no SIM -- WiFi only Retrieve WiFiManager
-            WifiManager wifi = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-            // Get WiFi status
-            WifiInfo info = wifi.getConnectionInfo();
-            if (info != null && !ANDROID6_FAKE_MAC.equals(info.getMacAddress())) {
-                deviceId = info.getMacAddress();
+        try {
+            String deviceId = getDeviceId();
+            if (deviceId == null) {
+                // no SIM -- WiFi only Retrieve WiFiManager
+                WifiManager wifi = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                // Get WiFi status
+                WifiInfo info = wifi.getConnectionInfo();
+                if (info != null && !ANDROID6_FAKE_MAC.equals(info.getMacAddress())) {
+                    deviceId = info.getMacAddress();
+                }
             }
+            if (deviceId != null) {
+                mProperties.put(DEVICE_ID_PROPERTY, deviceId);
+            }
+
+            String value;
+            value = mTelephonyManager.getSubscriberId();
+            if (value != null) {
+                mProperties.put(SUBSCRIBER_ID_PROPERTY, value);
+            }
+            value = mTelephonyManager.getSimSerialNumber();
+            if (value != null) {
+                mProperties.put(SIM_SERIAL_PROPERTY, value);
+            }
+            value = mTelephonyManager.getLine1Number();
+            if (value != null) {
+                mProperties.put(PHONE_NUMBER_PROPERTY, value);
+            }
+        } catch (SecurityException e) {
+            Timber.e(e);
         }
-        if (deviceId != null) {
-            mProperties.put(DEVICE_ID_PROPERTY, deviceId);
-        }
-        String value;
-        value = mTelephonyManager.getSubscriberId();
-        if (value != null) {
-            mProperties.put(SUBSCRIBER_ID_PROPERTY, value);
-        }
-        value = mTelephonyManager.getSimSerialNumber();
-        if (value != null) {
-            mProperties.put(SIM_SERIAL_PROPERTY, value);
-        }
-        value = mTelephonyManager.getLine1Number();
-        if (value != null) {
-            mProperties.put(PHONE_NUMBER_PROPERTY, value);
+
+    }
+
+    private void addFirebaseInstanceId() {
+        final String[] token = {""};
+        FirebaseInstallations.getInstance().getToken(true)
+                .addOnCompleteListener(new OnCompleteListener<InstallationTokenResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstallationTokenResult> task) {
+                        if (!task.isSuccessful()) {
+                            return;
+                        }
+                        token[0] = task.getResult().getToken();
+                    }
+                });
+        if (StringUtils.isNoneBlank(token[0])) {
+            mProperties.put(FIREBASE_INSTANCE_ID, token[0]);
         }
     }
 

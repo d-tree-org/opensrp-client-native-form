@@ -79,7 +79,7 @@ def githubProperties = new Properties()
 githubProperties.load(new FileInputStream(rootProject.file("github.properties")))
 
 def getVersionName = { ->
-    return "1.7.26-DTREE-MLS-3-SNAPSHOT" // Library version
+    return "1.7.26-DTREE-MLS-5-SNAPSHOT" // Library version
 }
 
 def getArtificatId = { ->
@@ -183,12 +183,12 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.android.support', module: 'recyclerview-v7'
     }
-    implementation('com.google.android.gms:play-services-location:16.0.0') {
+    implementation('com.google.android.gms:play-services-location:17.1.0') {
         exclude group: 'com.android.support', module: 'appcompat-v7'
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.android.support', module: 'recyclerview-v7'
     }
-    implementation('com.google.android.gms:play-services-vision:18.0.0') {
+    implementation('com.google.android.gms:play-services-vision:20.1.2') {
         exclude group: 'com.android.support', module: 'appcompat-v7'
         exclude group: 'com.android.support', module: 'support-v4'
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -206,7 +206,7 @@ dependencies {
         exclude group: 'com.android.support.test.espresso', module: 'espresso-core'
         exclude group: 'com.google.android.gms', module: 'play-services-vision'
     }
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
 
     implementation('io.ona.CircleProgressbar:lib:0.1.0@aar') {
         exclude group: 'com.android.support.constraint', module: 'constraint-layout'
@@ -251,6 +251,9 @@ dependencies {
     testImplementation('com.squareup:fest-android:1.0.8') { exclude module: 'support-v4' }
     testImplementation 'org.robolectric:robolectric:4.3.1'
     testImplementation "org.json:json:20190722"
+    implementation platform('com.google.firebase:firebase-bom:26.1.0')
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-messaging'
 }
 
 task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'createDebugCoverageReport']) {
