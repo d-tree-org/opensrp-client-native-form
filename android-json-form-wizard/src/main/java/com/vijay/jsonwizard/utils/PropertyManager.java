@@ -32,6 +32,8 @@ import com.vijay.jsonwizard.interfaces.OnActivityRequestPermissionResultListener
 import java.util.HashMap;
 import java.util.Locale;
 
+import timber.log.Timber;
+
 /**
  * Used to return JavaRosa type device properties
  *
@@ -55,11 +57,15 @@ public class PropertyManager {
     public PropertyManager(Context context) {
         mContext = context;
         mProperties = new HashMap<>();
-        grantPhoneStatePermission();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            grantPhoneStatePermission();
+        }
         handleOnRequestPermissionResults();
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE)
-                == PackageManager.PERMISSION_GRANTED) {
-           addPhoneProperties();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                addPhoneProperties();
+            }
         }
     }
 
@@ -124,31 +130,35 @@ public class PropertyManager {
     @SuppressLint("MissingPermission")
     private void addPhoneProperties() {
         mTelephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
-        String deviceId = getDeviceId();
-        if (deviceId == null) {
-            // no SIM -- WiFi only Retrieve WiFiManager
-            WifiManager wifi = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-            // Get WiFi status
-            WifiInfo info = wifi.getConnectionInfo();
-            if (info != null && !ANDROID6_FAKE_MAC.equals(info.getMacAddress())) {
-                deviceId = info.getMacAddress();
+        try {
+            String deviceId = getDeviceId();
+            if (deviceId == null) {
+                // no SIM -- WiFi only Retrieve WiFiManager
+                WifiManager wifi = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                // Get WiFi status
+                WifiInfo info = wifi.getConnectionInfo();
+                if (info != null && !ANDROID6_FAKE_MAC.equals(info.getMacAddress())) {
+                    deviceId = info.getMacAddress();
+                }
             }
-        }
-        if (deviceId != null) {
-            mProperties.put(DEVICE_ID_PROPERTY, deviceId);
-        }
-        String value;
-        value = mTelephonyManager.getSubscriberId();
-        if (value != null) {
-            mProperties.put(SUBSCRIBER_ID_PROPERTY, value);
-        }
-        value = mTelephonyManager.getSimSerialNumber();
-        if (value != null) {
-            mProperties.put(SIM_SERIAL_PROPERTY, value);
-        }
-        value = mTelephonyManager.getLine1Number();
-        if (value != null) {
-            mProperties.put(PHONE_NUMBER_PROPERTY, value);
+            if (deviceId != null) {
+                mProperties.put(DEVICE_ID_PROPERTY, deviceId);
+            }
+            String value;
+            value = mTelephonyManager.getSubscriberId();
+            if (value != null) {
+                mProperties.put(SUBSCRIBER_ID_PROPERTY, value);
+            }
+            value = mTelephonyManager.getSimSerialNumber();
+            if (value != null) {
+                mProperties.put(SIM_SERIAL_PROPERTY, value);
+            }
+            value = mTelephonyManager.getLine1Number();
+            if (value != null) {
+                mProperties.put(PHONE_NUMBER_PROPERTY, value);
+            }
+        } catch (SecurityException e) {
+            Timber.e(e);
         }
     }
 
