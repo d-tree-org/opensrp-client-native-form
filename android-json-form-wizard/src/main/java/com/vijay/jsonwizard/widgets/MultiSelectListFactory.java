@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -248,8 +249,6 @@ public class MultiSelectListFactory implements FormWidgetFactory {
         ImageView imgClose = view.findViewById(R.id.multiSelectListCloseDialog);
         TextView txtMultiSelectListDialogTitle = view.findViewById(R.id.multiSelectListDialogTitle);
         txtMultiSelectListDialogTitle.setText(jsonObject.optString(JsonFormConstants.MultiSelectUtils.DIALOG_TITLE));
-        SearchView searchViewMultiSelect = view.findViewById(R.id.multiSelectListSearchView);
-        searchViewMultiSelect.setQueryHint(jsonObject.optString(JsonFormConstants.MultiSelectUtils.SEARCH_HINT));
         final RecyclerView recyclerView = view.findViewById(R.id.multiSelectListRecyclerView);
         AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.FullScreenDialogStyle);
         builder.setView(view);
@@ -266,18 +265,27 @@ public class MultiSelectListFactory implements FormWidgetFactory {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(multiSelectListAdapter);
-        searchViewMultiSelect.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                multiSelectListAdapter.getFilter().filter(newText);
-                return true;
-            }
-        });
+        SearchView searchViewMultiSelect = view.findViewById(R.id.multiSelectListSearchView);
+        boolean hideSearchView = jsonObject.optBoolean(JsonFormConstants.MultiSelectUtils.HIDE_SEARCH_VIEW, false);
+        if (!hideSearchView) {
+            searchViewMultiSelect.setQueryHint(jsonObject.optString(JsonFormConstants.MultiSelectUtils.SEARCH_HINT));
+            searchViewMultiSelect.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    multiSelectListAdapter.getFilter().filter(newText);
+                    return true;
+                }
+            });
+        } else {
+            LinearLayout searchViewLayout = view.findViewById(R.id.layoutLevel2);
+            searchViewLayout.setVisibility(View.GONE);
+        }
 
         multiSelectListAdapter.setOnClickListener(new MultiSelectListAdapter.ClickListener() {
             @Override

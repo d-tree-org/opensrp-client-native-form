@@ -232,6 +232,7 @@ public class JsonFormConstants {
         String BUTTON_TEXT = "buttonText";
         String DIALOG_TITLE = "dialogTitle";
         String SEARCH_HINT = "searchHint";
+        String HIDE_SEARCH_VIEW = "hide_search_view";
         String SOURCE = "source";
         String GROUPINGS = "groupings";
         String SORT = "sort";
