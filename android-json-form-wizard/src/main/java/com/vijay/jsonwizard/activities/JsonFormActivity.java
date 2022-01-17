@@ -70,6 +70,7 @@ import com.vijay.jsonwizard.utils.PropertyManager;
 import com.vijay.jsonwizard.utils.Utils;
 import com.vijay.jsonwizard.views.CustomTextView;
 import com.vijay.jsonwizard.widgets.CountDownTimerFactory;
+import com.vijay.jsonwizard.widgets.MultiSelectListFactory;
 import com.vijay.jsonwizard.widgets.NumberSelectorFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -2001,6 +2002,7 @@ public class JsonFormActivity extends JsonFormBaseActivity implements JsonApi {
             childElement.setFocusable(true);
             ViewGroup group = (ViewGroup) childElement;
             refreshNumberSelector(group);
+            refreshMultiSelect(group);
             for (int id = 0; id < group.getChildCount(); id++) {
                 View child = group.getChildAt(id);
                 if (child instanceof CheckBox) {
@@ -2034,6 +2036,16 @@ public class JsonFormActivity extends JsonFormBaseActivity implements JsonApi {
             if (numSelectorLayout.getTag(R.id.is_number_selector_linear_layout) != null &&
                     Boolean.TRUE.equals(numSelectorLayout.getTag(R.id.is_number_selector_linear_layout))) {
                 numSelectorLayout.setTag(R.id.selected_number_value, null);
+            }
+        }
+    }
+
+    private void refreshMultiSelect(View group) {
+        if (group instanceof RelativeLayout) {
+            RelativeLayout multiSelectLayout = (RelativeLayout) group;
+            if (multiSelectLayout.getTag(R.id.is_multiselect_relative_layout) != null &&
+                    Boolean.TRUE.equals(multiSelectLayout.getTag(R.id.is_multiselect_relative_layout))) {
+                MultiSelectListFactory.clearSelectedItems(multiSelectLayout);
             }
         }
     }
