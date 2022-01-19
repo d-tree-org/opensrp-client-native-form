@@ -432,6 +432,15 @@ public class MultiSelectListFactory implements FormWidgetFactory {
         return isSelected;
     }
 
+    public static void clearSelectedItems(RelativeLayout relativeLayout) {
+
+        String currentAdapterKey = (String) relativeLayout.getTag(R.id.key);
+        MultiSelectListAccessory multiSelectListAccessory = getMultiSelectListAccessoryHashMap().get(currentAdapterKey);
+        if (multiSelectListAccessory != null) {
+            multiSelectListAccessory.getSelectedAdapter().getData().clear();
+            multiSelectListAccessory.getSelectedAdapter().notifyDataSetChanged();
+        }
+    }
 
     @Override
     public Set<String> getCustomTranslatableWidgetFields() {

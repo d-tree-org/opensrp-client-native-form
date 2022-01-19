@@ -1,5 +1,7 @@
 package com.vijay.jsonwizard.rules;
 
+import com.vijay.jsonwizard.constants.JsonFormConstants;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -101,14 +103,24 @@ public class RulesEngineHelper {
         return "";
     }
 
-    public List<String> getSelectedItemsFromMultiSelect(String str) throws JSONException {
+    public String getSelectedItemsFromMultiSelect(String str) throws JSONException {
         JSONArray jsonArray = new JSONArray(str);
-        List<String> listOfSelected = new ArrayList<>();
+        StringBuilder selectedItems = new StringBuilder();
         for (int i=0; i < jsonArray.length(); i++) {
             JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-            listOfSelected.add(jsonObject.getString("text"));
+            if (!(jsonObject.get(JsonFormConstants.KEY).toString().equalsIgnoreCase("other"))) {
+                selectedItems.append("\u2022 ").append(jsonObject.get(JsonFormConstants.TEXT)).append("<br />");
+            }
         }
-        return listOfSelected;
+        return selectedItems.toString();
+    }
+
+    public Boolean noItemSelected(String str) throws JSONException {
+
+        JSONArray jsonArray = new JSONArray(str);
+
+        return jsonArray.length() < 1;
+
     }
 
 }
