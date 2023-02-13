@@ -21,3 +21,4 @@ caches/
 daemon/
 native/
 wrapper/
+/github.properties
