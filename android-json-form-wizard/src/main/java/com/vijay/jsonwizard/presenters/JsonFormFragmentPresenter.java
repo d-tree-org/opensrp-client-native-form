@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -691,29 +692,31 @@ public class JsonFormFragmentPresenter extends
 
         switch (requestCode) {
             case PermissionUtils.CAMERA_PERMISSION_REQUEST_CODE:
-                if (PermissionUtils
-                        .verifyPermissionGranted(permissions, grantResults, Manifest.permission.CAMERA,
-                                Manifest.permission.READ_EXTERNAL_STORAGE,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    dispatchTakePictureIntent(key, type);
+                if (Build.VERSION.SDK_INT >= 33) {
+                    if (PermissionUtils.verifyPermissionGranted(
+                            permissions, grantResults, Manifest.permission.CAMERA,
+                            "android.permission.READ_MEDIA_IMAGES")) {
+                        dispatchTakePictureIntent(key, type);
+                    }
+                } else {
+                    if (PermissionUtils
+                            .verifyPermissionGranted(permissions, grantResults, Manifest.permission.CAMERA,
+                                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        dispatchTakePictureIntent(key, type);
+                    }
                 }
                 break;
-
             case PermissionUtils.PHONE_STATE_PERMISSION_REQUEST_CODE:
                 //TODO Find out functionality which uses Read Phone State permission
                 break;
             default:
                 break;
-
         }
     }
 
     private void dispatchTakePictureIntent(String key, String type) {
-        if (PermissionUtils.isPermissionGranted(formFragment,
-                new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                PermissionUtils.CAMERA_PERMISSION_REQUEST_CODE)) {
-
+        if (SDKBasedPermissionStatus()) {
             if (JsonFormConstants.CHOOSE_IMAGE.equals(type)) {
                 getView().hideKeyBoard();
                 mCurrentKey = key;
@@ -728,7 +731,7 @@ public class JsonFormFragmentPresenter extends
 
                     if (imageFile != null) {
                         Uri photoURI = FileProvider.getUriForFile(getView().getContext(),
-                                getView().getContext().getPackageName() + "" + ".fileprovider", imageFile);
+                                getView().getContext().getPackageName() + ".fileprovider", imageFile);
 
                         // Grant permission to the default camera app
                         PackageManager packageManager = getView().getContext().getPackageManager();
@@ -1272,5 +1275,18 @@ public class JsonFormFragmentPresenter extends
 
     public void cleanUp() {
         cleanupAndExit = true;
+    }
+
+    private boolean SDKBasedPermissionStatus() {
+        if (Build.VERSION.SDK_INT >= 33) {
+            return PermissionUtils.isPermissionGranted(formFragment,
+                    new String[]{Manifest.permission.CAMERA, "android.permission.READ_MEDIA_IMAGES"},
+                    PermissionUtils.CAMERA_PERMISSION_REQUEST_CODE);
+        } else {
+            return PermissionUtils.isPermissionGranted(formFragment,
+                    new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    PermissionUtils.CAMERA_PERMISSION_REQUEST_CODE);
+        }
     }
 }
